@@ -3066,15 +3066,21 @@ static void
 swap_atomic(jit_state_t *_jit, int32_t dst, int32_t loc, int32_t val)
 {
   int32_t result = jit_gpr_regno(get_temp_gpr(_jit));
-  int32_t val_or_tmp = dst == val ? jit_gpr_regno(get_temp_gpr(_jit)) : val;
-  movr(_jit, val_or_tmp, val);
+  int32_t dst_or_tmp;
+  if (dst == val || dst == loc)
+	  dst_or_tmp = jit_gpr_regno(get_temp_gpr(_jit));
+  else
+	  dst_or_tmp = dst;
+
   T1_DMB(_jit, DMB_ISH);
   void *retry = jit_address(_jit);
-  T1_LDREX(_jit, dst, loc, 0);
-  T1_STREX(_jit, result, val_or_tmp, loc, 0);
+  T1_LDREX(_jit, dst_or_tmp, loc, 0);
+  T1_STREX(_jit, result, val, loc, 0);
   jit_patch_there(_jit, bnei(_jit, result, 0), retry);
   T1_DMB(_jit, DMB_ISH);
-  if (dst == val) unget_temp_gpr(_jit);
+  movr(_jit, dst, dst_or_tmp);
+
+  if (dst == val || dst == loc) unget_temp_gpr(_jit);
   unget_temp_gpr(_jit);
 }
 
@@ -3083,7 +3089,7 @@ cas_atomic(jit_state_t *_jit, int32_t dst, int32_t loc, int32_t expected,
            int32_t desired)
 {
   int32_t dst_or_tmp;
-  if (dst == loc || dst == expected || dst == expected)
+  if (dst == loc || dst == expected || dst == desired)
     dst_or_tmp = jit_gpr_regno(get_temp_gpr(_jit));
   else
     dst_or_tmp = dst;
@@ -3098,7 +3104,9 @@ cas_atomic(jit_state_t *_jit, int32_t dst, int32_t loc, int32_t expected,
   jit_patch_here(_jit, bad);
   T1_DMB(_jit, DMB_ISH);
   movr(_jit, dst, dst_or_tmp);
-  unget_temp_gpr(_jit);
+
+  if (dst == loc || dst == expected || dst == desired)
+    unget_temp_gpr(_jit);
 }
 
 static void
