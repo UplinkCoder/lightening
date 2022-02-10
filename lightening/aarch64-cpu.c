@@ -64,7 +64,7 @@ oxxx(jit_state_t *_jit, int32_t Op, int32_t Rd, int32_t Rn, int32_t Rm)
 }
 
 static void
-oxxi(jit_state_t *_jit, int32_t Op, int32_t Rd, int32_t Rn, int32_t Imm12)
+oxxi(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12, int32_t Op)
 {
   uint32_t inst = Op;
   inst = write_Rd_bitfield(inst, Rd);
@@ -302,25 +302,25 @@ CMP(jit_state_t *_jit, int32_t Rn, int32_t Rm)
 static void
 CMPI(jit_state_t *_jit, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_SUBSI|XS,XZR_REGNO,Rn,Imm12);
+  return oxxi(_jit, XZR_REGNO,Rn,Imm12,A64_SUBSI|XS);
 }
 
 static void
 CMPI_12(jit_state_t *_jit, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_SUBSI|XS|LSL_12,XZR_REGNO,Rn,Imm12);
+  return oxxi(_jit, XZR_REGNO,Rn,Imm12,A64_SUBSI|XS|LSL_12);
 }
 
 static void
 CMNI(jit_state_t *_jit, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ADDSI|XS,XZR_REGNO,Rn,Imm12);
+  return oxxi(_jit, XZR_REGNO,Rn,Imm12,A64_ADDSI|XS);
 }
 
 static void
 CMNI_12(jit_state_t *_jit, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ADDSI|XS|LSL_12,XZR_REGNO,Rn,Imm12);
+  return oxxi(_jit, XZR_REGNO,Rn,Imm12,A64_ADDSI|XS|LSL_12);
 }
 
 static void
@@ -333,7 +333,7 @@ TST(jit_state_t *_jit, int32_t Rn, int32_t Rm)
 static void
 TSTI(jit_state_t *_jit, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ANDSI,XZR_REGNO,Rn,Imm12);
+  return oxxi(_jit, XZR_REGNO,Rn,Imm12,A64_ANDSI);
 }
 
 static void
@@ -429,13 +429,13 @@ ADD(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 ADDI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ADDI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_ADDI|XS);
 }
 
 static void
 ADDI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ADDI|XS|LSL_12,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_ADDI|XS|LSL_12);
 }
 
 static void
@@ -447,13 +447,13 @@ ADDS(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 ADDSI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ADDSI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_ADDSI|XS);
 }
 
 static void
 ADDSI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ADDSI|XS|LSL_12,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_ADDSI|XS|LSL_12);
 }
 
 static void
@@ -471,13 +471,13 @@ SUB(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 SUBI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_SUBI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_SUBI|XS);
 }
 
 static void
 SUBI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_SUBI|XS|LSL_12,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_SUBI|XS|LSL_12);
 }
 
 static void
@@ -489,13 +489,13 @@ SUBS(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 SUBSI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_SUBSI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_SUBSI|XS);
 }
 
 static void
 SUBSI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_SUBSI|XS|LSL_12,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_SUBSI|XS|LSL_12);
 }
 
 static void
@@ -580,7 +580,7 @@ AND(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 ANDI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ANDI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_ANDI|XS);
 }
 
 static void
@@ -593,7 +593,7 @@ ORR(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 ORRI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_ORRI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_ORRI|XS);
 }
 
 static void
@@ -606,7 +606,7 @@ EOR(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm)
 static void
 EORI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_EORI|XS,Rd,Rn,Imm12);
+  return oxxi(_jit, Rd,Rn,Imm12,A64_EORI|XS);
 }
 
 static void
@@ -684,7 +684,7 @@ LDRSB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRSBI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRSBI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRSBI);
 }
 
 static void
@@ -702,7 +702,7 @@ LDRB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRBI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRBI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRBI);
 }
 
 static void
@@ -720,7 +720,7 @@ LDRSH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRSHI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRSHI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRSHI);
 }
 
 static void
@@ -738,7 +738,7 @@ LDRH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRHI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRHI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRHI);
 }
 
 static void
@@ -756,7 +756,7 @@ LDRSW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRSWI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRSWI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRSWI);
 }
 
 static void
@@ -774,7 +774,7 @@ LDRW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRWI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRWI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRWI);
 }
 
 static void
@@ -792,7 +792,7 @@ LDR(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 LDRI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_LDRI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_LDRI);
 }
 
 static void
@@ -810,7 +810,7 @@ STRB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 STRBI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_STRBI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_STRBI);
 }
 
 static void
@@ -828,7 +828,7 @@ STRH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 STRHI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_STRHI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_STRHI);
 }
 
 static void
@@ -846,7 +846,7 @@ STRW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 STRWI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_STRWI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_STRWI);
 }
 
 static void
@@ -864,7 +864,7 @@ STR(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 static void
 STRI(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm12) 
 {
-  return oxxi(_jit, A64_STRI,Rt,Rn,Imm12);
+  return oxxi(_jit, Rt,Rn,Imm12,A64_STRI);
 }
 
 static void
