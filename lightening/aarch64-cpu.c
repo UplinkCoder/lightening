@@ -54,7 +54,7 @@ logical_immediate(jit_word_t imm)
 }
 
 static void
-oxxx(jit_state_t *_jit, int32_t Op, int32_t Rd, int32_t Rn, int32_t Rm)
+oxxx(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm, int32_t Op)
 {
   uint32_t inst = Op;
   inst = write_Rd_bitfield(inst, Rd);
@@ -326,7 +326,7 @@ CMNI_12(jit_state_t *_jit, int32_t Rn, int32_t Imm12)
 static void
 TST(jit_state_t *_jit, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_ANDS|XS,XZR_REGNO,Rn,Rm);
+  return oxxx(_jit, XZR_REGNO,Rn,Rm, A64_ANDS|XS);
 }
 
 /* actually should use oxxrs but logical_immediate returns proper encoding */
@@ -423,7 +423,7 @@ MOVK_48(jit_state_t *_jit, int32_t Rd, int32_t Imm16)
 static void
 ADD(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_ADD|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_ADD|XS);
 }
 
 static void
@@ -441,7 +441,7 @@ ADDI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12)
 static void
 ADDS(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_ADDS|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_ADDS|XS);
 }
 
 static void
@@ -459,13 +459,13 @@ ADDSI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12)
 static void
 ADCS(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_ADCS|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_ADCS|XS);
 }
 
 static void
 SUB(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_SUB|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_SUB|XS);
 }
 
 static void
@@ -483,7 +483,7 @@ SUBI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12)
 static void
 SUBS(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_SUBS|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_SUBS|XS);
 }
 
 static void
@@ -501,43 +501,43 @@ SUBSI_12(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12)
 static void
 SBCS(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_SBCS|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_SBCS|XS);
 }
 
 static void
 MUL(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_MUL|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_MUL|XS);
 }
 
 static void
 SMULH(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_SMULH,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_SMULH);
 }
 
 static void
 UMULH(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_UMULH,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_UMULH);
 }
 
 static void
 SDIV(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_SDIV|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_SDIV|XS);
 }
 
 static void
 UDIV(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_UDIV|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_UDIV|XS);
 }
 
 static void
 LSL(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LSL|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_LSL|XS);
 }
 
 static void
@@ -549,7 +549,7 @@ LSLI(jit_state_t *_jit, int32_t r0, int32_t r1, int32_t i0)
 static void
 ASR(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_ASR|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_ASR|XS);
 }
 
 static void
@@ -561,7 +561,7 @@ ASRI(jit_state_t *_jit, int32_t r0, int32_t r1, int32_t i0)
 static void
 LSR(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LSR|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_LSR|XS);
 }
 
 static void
@@ -573,7 +573,7 @@ LSRI(jit_state_t *_jit, int32_t r0, int32_t r1, int32_t i0)
 static void
 AND(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_AND|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_AND|XS);
 }
 
 /* actually should use oxxrs but logical_immediate returns proper encoding */;
@@ -586,7 +586,7 @@ ANDI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12)
 static void
 ORR(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_ORR|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_ORR|XS);
 }
 
 /* actually should use oxxrs but logical_immediate returns proper encoding */
@@ -599,7 +599,7 @@ ORRI(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Imm12)
 static void
 EOR(jit_state_t *_jit, int32_t Rd, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_EOR|XS,Rd,Rn,Rm);
+  return oxxx(_jit, Rd,Rn,Rm, A64_EOR|XS);
 }
 
 /* actually should use oxxrs but logical_immediate returns proper encoding */
@@ -672,13 +672,13 @@ LDAXR(jit_state_t *_jit, int32_t Rt, int32_t Rn)
 static void
 STLXR(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm)
 {
-  return oxxx(_jit, A64_STLXR, Rt, Rn, Rm);
+  return oxxx(_jit,  Rt, Rn, Rm, A64_STLXR);
 }
 
 static void
 LDRSB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDRSB,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDRSB);
 }
 
 static void
@@ -696,7 +696,7 @@ LDURSB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 LDRB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDRB,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDRB);
 }
 
 static void
@@ -714,7 +714,7 @@ LDURB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 LDRSH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDRSH,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDRSH);
 }
 
 static void
@@ -732,7 +732,7 @@ LDURSH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 LDRH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDRH,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDRH);
 }
 
 static void
@@ -750,7 +750,7 @@ LDURH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 LDRSW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDRSW,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDRSW);
 }
 
 static void
@@ -768,7 +768,7 @@ LDURSW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 LDRW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDRW,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDRW);
 }
 
 static void
@@ -786,7 +786,7 @@ LDURW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 LDR(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_LDR,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_LDR);
 }
 
 static void
@@ -804,7 +804,7 @@ LDUR(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 STRB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_STRB,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_STRB);
 }
 
 static void
@@ -822,7 +822,7 @@ STURB(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 STRH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_STRH,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_STRH);
 }
 
 static void
@@ -840,7 +840,7 @@ STURH(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 STRW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_STRW,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_STRW);
 }
 
 static void
@@ -858,7 +858,7 @@ STURW(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Imm9)
 static void
 STR(jit_state_t *_jit, int32_t Rt, int32_t Rn, int32_t Rm) 
 {
-  return oxxx(_jit, A64_STR,Rt,Rn,Rm);
+  return oxxx(_jit, Rt,Rn,Rm, A64_STR);
 }
 
 static void
