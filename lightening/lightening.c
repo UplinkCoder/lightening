@@ -29,7 +29,11 @@
 
 #include "../lightening.h"
 
-#define ASSERT(x) do { if (!(x)) abort(); } while (0)
+#ifndef NDEBUG
+# define ASSERT(x) do { if (!(x)) abort(); } while (0)
+#else
+# define ASSERT(x)
+#endif
 
 #if defined(__GNUC__)
 # define maybe_unused           __attribute__ ((unused))
