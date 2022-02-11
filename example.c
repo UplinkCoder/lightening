@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+#include "lightening.h"
+#include "pool.c"
+#include <sys/mman.h>
+
+Pool gPool;
+void* allocFromMainPool(size_t sz)
+{
+    PoolAllocationRecordIndex result = Pool_Allocate(&gPool, sz);
+    if (result.value)
+    {
+        return gPool.recordPage[result.value].startMemory;
+    }
+    return (void*)0;
+}
+void freeFromMainPool(void* ptr)
+{
+    // TODO implement
+    return ;
+}
+
+typedef int(*func_t)();
+
+int main(int argc, const char* argv[])
+{
+    // first thing we have to do is to init the library;
+
+    Pool_Init(&gPool);
+    jit_state_t* ctx =
+        jit_new_state(allocFromMainPool, freeFromMainPool);
+
+    if (argc < 2)
+    {
+        printf("This little program will JIT code to add the numbers given on the command_line\nPlease give it some numbers to add\n");
+        return 1;
+    }
+
+    const size_t arena_size = 4096;
+    char *arena_base = mmap (NULL, arena_size,
+           PROT_EXEC | PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+
+    jit_begin(ctx, arena_base, arena_size);
+
+    jit_movi(ctx, JIT_R0, 0);
+
+    for(int i = 1; i < argc; i++)
+    {
+        int n = atoi(argv[i]);
+        jit_addi(ctx, JIT_R0, JIT_R0, n);
+    }
+
+    jit_retr(ctx, JIT_R0);
+    size_t code_size;
+    func_t fn = ((func_t) jit_end(ctx, &code_size));
+    printf("%d bytes generated\n", (int)code_size);
+
+    printf("The result is: %d\n", fn());
+    return 0;    
+}
