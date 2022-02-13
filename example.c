@@ -15,6 +15,7 @@ void* allocFromMainPool(size_t sz)
     }
     return (void*)0;
 }
+
 void freeFromMainPool(void* ptr)
 {
     // TODO implement
@@ -26,8 +27,10 @@ typedef int(*func_t)();
 int main(int argc, const char* argv[])
 {
     // first thing we have to do is to init the library;
-
+    init_jit();
+    // then we init our memory allocator
     Pool_Init(&gPool);
+
     jit_state_t* ctx =
         jit_new_state(allocFromMainPool, freeFromMainPool);
 
@@ -59,5 +62,5 @@ int main(int argc, const char* argv[])
     printf("%d bytes generated\n", (int)code_size);
 
     printf("The result is: %d\n", fn());
-    return 0;    
+    return 0;
 }
