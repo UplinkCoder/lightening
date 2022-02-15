@@ -74,7 +74,7 @@ int main(int argc, const char* argv[])
 		}
 		else
 		{
-			printf("Unrecogonized command\n");
+			printf("Unrecogonized command '%s'\n", line);
 		}
 	}
 
