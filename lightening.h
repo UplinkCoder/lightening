@@ -20,6 +20,7 @@
 
 #ifndef _jit_h
 #define _jit_h
+#define _GNU_SOURCE 1
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -104,12 +105,12 @@ typedef struct jit_reloc
   uint32_t offset;
 } jit_reloc_t;
 
-#if defined(__GNUC__) && (__GNUC__ >= 4)
-#  define JIT_API		extern __attribute__ ((__visibility__("hidden")))
-#else
+//#if defined(__GNUC__) && (__GNUC__ >= 4)
+//#  define JIT_API		extern __attribute__ ((__visibility__("hidden")))
+//#else
 #  define JIT_API		extern
-#endif
-
+//#endif
+struct jit_state;
 typedef struct jit_state	jit_state_t;
 
 enum jit_operand_abi
@@ -323,6 +324,224 @@ jit_load_args_3(jit_state_t *_jit, jit_operand_t a, jit_operand_t b,
   jit_operand_t args[] = { a, b, c };
   return jit_load_args(_jit, 3, args);
 }
+
+JIT_API void jit_addr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_addr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_addr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_addi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_addcr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_addci (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_addxr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_addxi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_subr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_subr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_subr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_subi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_subcr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_subci (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_subxr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_subxi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_mulr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_mulr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_mulr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_muli (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_qmulr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_gpr_t d);
+JIT_API void jit_qmuli (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_imm_t d);
+JIT_API void jit_qmulr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_gpr_t d);
+JIT_API void jit_qmuli_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_uimm_t d);
+JIT_API void jit_divr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_divr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_divr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b, jit_fpr_t c);
+JIT_API void jit_divi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_divr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_divi_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_qdivr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_gpr_t d);
+JIT_API void jit_qdivi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_imm_t d);
+JIT_API void jit_qdivr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_gpr_t d);
+JIT_API void jit_qdivi_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_uimm_t d);
+JIT_API void jit_remr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_remi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_imm_t c);
+JIT_API void jit_remr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_remi_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_andr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_andi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_orr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ori (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_xorr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_xori (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_lshr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_lshi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_rshr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_rshi (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_rshr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_rshi_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_uimm_t c);
+JIT_API void jit_negr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_comr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_movr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_movi (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_mov_addr (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_extr_c (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_extr_uc (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_extr_s (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_extr_us (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_bswapr_us (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_bswapr_ui (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_ldr_c (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_c (jit_state_t* _jit, jit_gpr_t a, jit_pointer_t b);
+JIT_API void jit_ldr_uc (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_uc (jit_state_t* _jit, jit_gpr_t a, jit_pointer_t b);
+JIT_API void jit_ldr_s (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_s (jit_state_t* _jit, jit_gpr_t a, jit_pointer_t b);
+JIT_API void jit_ldr_us (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_us (jit_state_t* _jit, jit_gpr_t a, jit_pointer_t b);
+JIT_API void jit_ldr_i (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_i (jit_state_t* _jit, jit_gpr_t a, jit_pointer_t b);
+JIT_API void jit_ldr_f (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_f (jit_state_t* _jit, jit_fpr_t a, jit_pointer_t b);
+JIT_API void jit_ldr_d (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b);
+JIT_API void jit_ldi_d (jit_state_t* _jit, jit_fpr_t a, jit_pointer_t b);
+JIT_API void jit_ldxr_c (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_c (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldxr_uc (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_uc (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldxr_s (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_s (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldxr_us (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_us (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldxr_i (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_i (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldxr_f (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_f (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldxr_d (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_ldxi_d (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b, jit_off_t c);
+JIT_API void jit_ldr_atomic (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_str_atomic (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_swap_atomic (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_cas_atomic (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c, jit_gpr_t d);
+JIT_API void jit_str_c (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_sti_c (jit_state_t* _jit, jit_pointer_t a, jit_gpr_t b);
+JIT_API void jit_str_s (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_sti_s (jit_state_t* _jit, jit_pointer_t a, jit_gpr_t b);
+JIT_API void jit_str_i (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API void jit_sti_i (jit_state_t* _jit, jit_pointer_t a, jit_gpr_t b);
+JIT_API void jit_str_f (jit_state_t* _jit, jit_gpr_t a, jit_fpr_t b);
+JIT_API void jit_sti_f (jit_state_t* _jit, jit_pointer_t a, jit_fpr_t b);
+JIT_API void jit_str_d (jit_state_t* _jit, jit_gpr_t a, jit_fpr_t b);
+JIT_API void jit_sti_d (jit_state_t* _jit, jit_pointer_t a, jit_fpr_t b);
+JIT_API void jit_stxr_c (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_stxi_c (jit_state_t* _jit, jit_off_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_stxr_s (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_stxi_s (jit_state_t* _jit, jit_off_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_stxr_i (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_stxi_i (jit_state_t* _jit, jit_off_t a, jit_gpr_t b, jit_gpr_t c);
+JIT_API void jit_stxr_f (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_fpr_t c);
+JIT_API void jit_stxi_f (jit_state_t* _jit, jit_off_t a, jit_gpr_t b, jit_fpr_t c);
+JIT_API void jit_stxr_d (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b, jit_fpr_t c);
+JIT_API void jit_stxi_d (jit_state_t* _jit, jit_off_t a, jit_gpr_t b, jit_fpr_t c);
+JIT_API jit_reloc_t jit_bltr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bltr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bltr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_blti (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bltr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_blti_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bler (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bler_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bler_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_blei (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bler_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_blei_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_beqr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_beqr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_beqr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_beqi (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bger (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bger_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bger_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bgei (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bger_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bgei_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bgtr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bgtr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bgtr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bgti (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bgtr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bgti_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bner (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bner_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bner_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bnei (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bunltr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunltr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunler_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunler_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_buneqr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_buneqr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunger_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunger_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bungtr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bungtr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bltgtr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bltgtr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bordr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bordr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunordr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bunordr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API jit_reloc_t jit_bmsr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bmsi (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bmcr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bmci (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_boaddr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_boaddi (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_boaddr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_boaddi_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bxaddr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bxaddi (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bxaddr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bxaddi_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bosubr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bosubi (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bosubr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bosubi_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API jit_reloc_t jit_bxsubr (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bxsubi (jit_state_t* _jit, jit_gpr_t a, jit_imm_t b);
+JIT_API jit_reloc_t jit_bxsubr_u (jit_state_t* _jit, jit_gpr_t a, jit_gpr_t b);
+JIT_API jit_reloc_t jit_bxsubi_u (jit_state_t* _jit, jit_gpr_t a, jit_uimm_t b);
+JIT_API void jit_jmpr (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_jmpi (jit_state_t* _jit, jit_pointer_t a);
+JIT_API jit_reloc_t jit_jmp (jit_state_t* _jit);
+JIT_API void jit_jmpi_with_link (jit_state_t* _jit, jit_pointer_t a);
+JIT_API void jit_pop_link_register (jit_state_t* _jit);
+JIT_API void jit_push_link_register (jit_state_t* _jit);
+JIT_API void jit_ret (jit_state_t* _jit);
+JIT_API void jit_retr (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_retr_f (jit_state_t* _jit, jit_fpr_t a);
+JIT_API void jit_retr_d (jit_state_t* _jit, jit_fpr_t a);
+JIT_API void jit_reti (jit_state_t* _jit, jit_imm_t a);
+JIT_API void jit_retval_c (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_retval_uc (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_retval_s (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_retval_us (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_retval_i (jit_state_t* _jit, jit_gpr_t a);
+JIT_API void jit_retval_f (jit_state_t* _jit, jit_fpr_t a);
+JIT_API void jit_retval_d (jit_state_t* _jit, jit_fpr_t a);
+JIT_API void jit_breakpoint (jit_state_t* _jit);
+JIT_API void jit_negr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_negr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_absr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_absr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_sqrtr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_sqrtr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_truncr_f_i (jit_state_t* _jit, jit_gpr_t a, jit_fpr_t b);
+JIT_API void jit_extr_f (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b);
+JIT_API void jit_extr_d (jit_state_t* _jit, jit_fpr_t a, jit_gpr_t b);
+JIT_API void jit_extr_d_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_extr_f_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_movr_f (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_movr_d (jit_state_t* _jit, jit_fpr_t a, jit_fpr_t b);
+JIT_API void jit_movi_f (jit_state_t* _jit, jit_fpr_t a, jit_float32_t b);
+JIT_API void jit_movi_d (jit_state_t* _jit, jit_fpr_t a, jit_float64_t b);
+JIT_API void jit_truncr_d_i (jit_state_t* _jit, jit_gpr_t a, jit_fpr_t b);
+
 
 #define JIT_PROTO_0(stem, ret) \
   ret jit_##stem (jit_state_t* _jit)

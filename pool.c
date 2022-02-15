@@ -95,7 +95,6 @@ PoolAllocationRecordIndex Pool_Allocate(Pool* thisP, uint32_t requested_size)
 #define GROWTH_FACTOR 1.6
         uint32_t oldSize = (thisP->allocatedRecordPages * page_size);
 
-        PoolAllocationRecord par = *thisP->recordPage;
         uint32_t newSize = ((uint32_t)(thisP->allocatedRecordPages * GROWTH_FACTOR) * page_size);
         PoolAllocationRecord* newPar = Pool_Reallocate(thisP, thisP->recordPage, newSize);
 
