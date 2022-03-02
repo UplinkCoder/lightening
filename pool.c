@@ -30,7 +30,7 @@ static_assert(Align16(0) == 0);
 #  define nullptr ((void*)0)
 #endif
 
-static uint32_t page_size = 0;
+static uint32_t pool_page_size = 0;
 
 #ifdef __linux__
 #define _GNU_SOURCE 1
@@ -47,14 +47,14 @@ static uint32_t page_size = 0;
 
 static uint8_t* Pool_AllocateNewPages(Pool* thisP, uint32_t nPages) {
     thisP->n_allocated_extra_pages += nPages;
-    return MMAP_SIZE(page_size * nPages);
+    return MMAP_SIZE(pool_page_size * nPages);
 }
 
 void Pool_Init(Pool* thisP) {
-    if (!page_size)
-        *((uint32_t*)&page_size) = sysconf(_SC_PAGE_SIZE);
+    if (!pool_page_size)
+        *((uint32_t*)&pool_page_size) = sysconf(_SC_PAGE_SIZE);
 
-    const uint8_t* first_page = MMAP_SIZE(page_size);
+    const uint8_t* first_page = MMAP_SIZE(pool_page_size);
     if (!first_page) perror("mmap");
 
 #define N_INITIAL_RECORD_PAGES (4096)
@@ -62,19 +62,19 @@ void Pool_Init(Pool* thisP) {
         Pool_AllocateNewPages(thisP, N_INITIAL_RECORD_PAGES);
 
     thisP->recordPage->startMemory = (uint8_t*)thisP->recordPage;
-    thisP->recordPage->sizeAllocated = N_INITIAL_RECORD_PAGES * page_size;
-    thisP->recordPage->sizeRequested = N_INITIAL_RECORD_PAGES * page_size;
+    thisP->recordPage->sizeAllocated = N_INITIAL_RECORD_PAGES * pool_page_size;
+    thisP->recordPage->sizeRequested = N_INITIAL_RECORD_PAGES * pool_page_size;
     thisP->recordPage->used = 1;
     thisP->recordPage->pageRangeStart = 1;
 
     thisP->n_allocation_records = 1;
-    thisP->recordsLeft = ((N_INITIAL_RECORD_PAGES * page_size) / sizeof(PoolAllocationRecord)) - 1;
+    thisP->recordsLeft = ((N_INITIAL_RECORD_PAGES * pool_page_size) / sizeof(PoolAllocationRecord)) - 1;
     thisP->allocatedRecordPages = N_INITIAL_RECORD_PAGES;
 
     thisP->allocationAreaStart =
         (uint8_t*)Align16((size_t)first_page);
 
-    thisP->sizeLeftOnCurrentPage = page_size;
+    thisP->sizeLeftOnCurrentPage = pool_page_size;
 #undef N_INITIAL_RECORD_PAGES
 }
 
@@ -93,13 +93,13 @@ PoolAllocationRecordIndex Pool_Allocate(Pool* thisP, uint32_t requested_size)
     if (thisP->recordsLeft-- == 0)
     {
 #define GROWTH_FACTOR 1.6
-        uint32_t oldSize = (thisP->allocatedRecordPages * page_size);
+        uint32_t oldSize = (thisP->allocatedRecordPages * pool_page_size);
 
-        uint32_t newSize = ((uint32_t)(thisP->allocatedRecordPages * GROWTH_FACTOR) * page_size);
+        uint32_t newSize = ((uint32_t)(thisP->allocatedRecordPages * GROWTH_FACTOR) * pool_page_size);
         PoolAllocationRecord* newPar = Pool_Reallocate(thisP, thisP->recordPage, newSize);
 
         thisP->recordsLeft = (newSize - oldSize)  / sizeof(PoolAllocationRecord);
-        thisP->allocatedRecordPages = newSize / page_size;
+        thisP->allocatedRecordPages = newSize / pool_page_size;
 
         thisP->recordPage = (PoolAllocationRecord*) newPar->startMemory;
         *thisP->recordPage = *newPar;
@@ -114,12 +114,12 @@ PoolAllocationRecordIndex Pool_Allocate(Pool* thisP, uint32_t requested_size)
     }
     else
     {
-        if (requested_size >= page_size)
+        if (requested_size >= pool_page_size)
         {
             const size_t n_pages_required =
-                ((requested_size + page_size) / page_size);
+                ((requested_size + pool_page_size) / pool_page_size);
 
-            aligned_size = (n_pages_required * page_size);
+            aligned_size = (n_pages_required * pool_page_size);
             {
                 uint8_t* p = Pool_AllocateNewPages(thisP, n_pages_required);
                 if (p)
@@ -133,7 +133,7 @@ PoolAllocationRecordIndex Pool_Allocate(Pool* thisP, uint32_t requested_size)
         {
             // time to use a new page for small allocations
             uint8_t* pageMem = Pool_AllocateNewPages(thisP, 2);
-            thisP->sizeLeftOnCurrentPage = (page_size * 2) - aligned_size;
+            thisP->sizeLeftOnCurrentPage = (pool_page_size * 2) - aligned_size;
             thisP->allocationAreaStart = pageMem + aligned_size;
             //TODO keep a page header and such
             memory = pageMem;
@@ -172,7 +172,7 @@ PoolAllocationRecord* Pool_Reallocate(Pool* thisP, PoolAllocationRecord* parp,
     }
     else if(parp->pageRangeStart)
     {
-        size_t new_size = ((requested_new_size + page_size) / page_size) * page_size;
+        size_t new_size = ((requested_new_size + pool_page_size) / pool_page_size) * pool_page_size;
         void* new_mem = mremap((void*)parp->startMemory, parp->sizeAllocated,
             new_size, MREMAP_MAYMOVE);
         if (new_mem == MAP_FAILED)
