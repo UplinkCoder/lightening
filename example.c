@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "pool.c"
+#include "int_iter.c"
 #include "lightening.h"
 #include "lightening/lightening.c"
 #include "linenoise/linenoise.h"
@@ -66,11 +67,22 @@ int main(int argc, const char* argv[])
 	jit_begin(ctx, arena_base, arena_size);
 
     char* line;
+
     while((line = linenoise("lJIT> ")))
     {
+        uint32_t sz = strlen(line);
 		if (strcmp(line, ":q") == 0)
 		{
 			exit(0);
+		}
+		if (sz > 4 && memcmp(line, "add ", 4) == 0)
+		{
+            IntIter it;
+            IntIter_FromBuffer(&it, line + 4, sz - 3/*inlude 0 terminator*/);
+            int a, b;
+            IntIter_NextInt(&it, &a);
+            IntIter_NextInt(&it, &b);
+            printf("we would now add %d and %d\n", a, b);
 		}
 		else
 		{
