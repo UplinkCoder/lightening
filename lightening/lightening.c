@@ -76,6 +76,7 @@ struct jit_state
   uint8_t overflow;
   uint8_t emitting_data;
   int frame_size; // Used to know when to align stack.
+  int spill_offset;
 #ifdef JIT_NEEDS_LITERAL_POOL
   struct jit_literal_pool *pool;
 #endif
@@ -1191,6 +1192,11 @@ static const size_t pv_count = ARRAY_SIZE(platform_callee_save_gprs);
 static const size_t v_count = ARRAY_SIZE(user_callee_save_gprs);
 static const size_t vf_count = ARRAY_SIZE(user_callee_save_fprs);
 
+static size_t jit_spill_offset(jit_state_t *_jit)
+{
+	return _jit->frame_size - _jit->spill_offset;
+}
+
 size_t
 jit_enter_jit_abi(jit_state_t *_jit, size_t v, size_t vf, size_t frame_size)
 {
@@ -1199,9 +1205,11 @@ jit_enter_jit_abi(jit_state_t *_jit, size_t v, size_t vf, size_t frame_size)
 
   ASSERT(_jit->frame_size == 0);
   _jit->frame_size = jit_initial_frame_size();
+  _jit->spill_offset = _jit->frame_size + sizeof(uintptr_t);
 
   size_t reserved =
-    jit_align_stack(_jit, (pv_count + v) * (__WORDSIZE / 8) + vf * 8);
+    jit_align_stack(_jit, sizeof(uintptr_t) + (pv_count + v)
+		    * (__WORDSIZE / 8) + vf * 8);
 
   size_t offset = 0;
   for (size_t i = 0; i < vf; i++, offset += 8)
@@ -1283,9 +1291,13 @@ jit_calli(jit_state_t *_jit, jit_pointer_t f, size_t argc, jit_operand_t args[])
 void
 jit_callr(jit_state_t *_jit, jit_gpr_t f, size_t argc, jit_operand_t args[])
 {
+  jit_stxi(_jit, jit_spill_offset(_jit), JIT_SP, f);
   size_t stack_bytes = prepare_call_args(_jit, argc, args);
 
-  callr(_jit, jit_gpr_regno(f));
+  jit_gpr_t t = get_temp_gpr(_jit);
+  jit_ldxi(_jit, t, JIT_SP, jit_spill_offset(_jit));
+  callr(_jit, jit_gpr_regno(t));
+  unget_temp_gpr(_jit);
 
   jit_shrink_stack(_jit, stack_bytes);
 }
